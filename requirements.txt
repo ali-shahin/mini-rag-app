@@ -5,4 +5,10 @@ python-dotenv>=1.0.0
 pydantic-settings>=2.9.0
 aiofiles>=24.0.0
 langchain>=0.3.0
-PyMuPDF>=1.25.0
+langchain-community>=0.3.0
+langchain-text-splitters>=0.3.0
+PyMuPDF
+pillow
+langchain-openai
+pymongo
+motor  # async MongoDB driver

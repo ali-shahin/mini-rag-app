@@ -6,10 +6,15 @@ class Settings(BaseSettings):
     APP_NAME: str
     APP_VERSION: str
     APP_URL: str
-    OPENAI_API_KEY: str
+
     FILE_ALLOWED_TYPES: list[str]
     FILE_MAX_SIZE: int
     FILE_CHUNK_SIZE: int
+
+    MONGO_DB_URL: str
+    MONGO_DB_NAME: str
+
+    OPENAI_API_KEY: str
 
     model_config = SettingsConfigDict(
         env_file='.env',

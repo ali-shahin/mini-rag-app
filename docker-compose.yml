@@ -7,3 +7,25 @@ services:
       - ./app:/app
     environment:
       - PYTHONPATH=/app
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - "4081:8081"
+    depends_on:
+      - mongodb
+    restart: always
+    volumes:
+      - ./mongo-express:/usr/src/app
+
+volumes:
+  mongodb_data:
+    driver: local
