@@ -2,8 +2,8 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class DataProcessRequest(BaseModel):
-    file_id: str = None
+class DataDocumentRequest(BaseModel):
+    file_name: str = None
     chunk_size: Optional[int] = 100
-    overlap_size: Optional[int] = 20
+    chunk_overlap: Optional[int] = 20
     do_reset: Optional[int] = 0
