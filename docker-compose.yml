@@ -7,25 +7,46 @@ services:
       - ./app:/app
     environment:
       - PYTHONPATH=/app
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - rag-app
 
   mongodb:
     image: mongo:latest
+    container_name: mongodb
     ports:
       - "27017:27017"
-    restart: always
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 3s
+      retries: 5
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - rag-app
 
   mongo-express:
     image: mongo-express
+    container_name: mongo-express
     ports:
-      - "4081:8081"
+      - "8081:8081"
     depends_on:
-      - mongodb
-    restart: always
+      mongodb:
+        condition: service_healthy
     volumes:
       - ./mongo-express:/usr/src/app
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    networks:
+      - rag-app
 
 volumes:
   mongodb_data:
     driver: local
+
+networks:
+  rag-app:
+    driver: bridge
