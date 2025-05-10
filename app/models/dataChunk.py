@@ -8,7 +8,7 @@ class DataChunk(BaseModel):
     chunk_text: str
     chunk_metadata: dict
     chunk_order: int = Field(..., gt=0)
-    chunk_project_id: str
+    chunk_project_id: ObjectId
 
     class Config:
         validate_by_name = True

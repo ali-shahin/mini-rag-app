@@ -1,1 +1,2 @@
-from .projectRepo import ProjectRepo
+from .ProjectRepo import ProjectRepo
+from .DataChunkRepo import DataChunkRepo
