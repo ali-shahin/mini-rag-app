@@ -1,14 +1,18 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from bson.objectid import ObjectId
+from bson import ObjectId
 
 
 class DataChunk(BaseModel):
-    _id: Optional[ObjectId] = Field(default_factory=ObjectId, alias="id")
+    id: Optional[ObjectId] = Field(alias="_id", default_factory=ObjectId)
     chunk_text: str
     chunk_metadata: dict
     chunk_order: int = Field(..., gt=0)
-    chunk_project_id: ObjectId
+    chunk_project_id: str
 
     class Config:
-        allow_population_by_field_name = True
+        validate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str
+        }

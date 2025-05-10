@@ -1,16 +1,21 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional
-from bson.objectid import ObjectId
+from bson import ObjectId
 
 
 class Project(BaseModel):
-    _id: Optional[ObjectId] = Field(default_factory=ObjectId, alias="id")
-    project_id: str
+    id: Optional[ObjectId] = Field(default_factory=ObjectId, alias="_id")
+    project_id: str = Field(..., min_length=1)
 
     @field_validator("project_id")
     def validate_project_id(cls, value):
         if not value.isalnum():
             raise ValueError("Project ID must be alphanumeric")
+        return value
 
     class Config:
-        allow_population_by_field_name = True
+        validate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str
+        }
