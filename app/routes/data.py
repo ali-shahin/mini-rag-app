@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status, Request
 from fastapi.responses import JSONResponse
 from core.config import get_settings, Settings
 from api import DataController, DocumentController
 import aiofiles
 import logging
 from schemas.data import DataDocumentRequest
+from repositories.projectRepo import ProjectRepo
 
 
 logger = logging.getLogger(__name__)
@@ -15,8 +16,21 @@ data_router = APIRouter(
 
 
 @data_router.post("/upload/{project_id}")
-async def upload_data(project_id: str, file: UploadFile = File(...),
+async def upload_data(request: Request, project_id: str, file: UploadFile = File(...),
                       app_settings: Settings = Depends(get_settings)):
+
+    if request.app.db_client is None:
+        raise HTTPException(
+            status_code=500, detail="Database client not initialized")
+
+    # Check if the project exists
+    project_repo = ProjectRepo(request.app.db_client)
+    project = await project_repo.get_or_create_project(project_id)
+    if project is None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": f"Project {project_id} not found."}
+        )
 
     data_controller = DataController()
 
@@ -50,7 +64,9 @@ async def upload_data(project_id: str, file: UploadFile = File(...),
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={"message": "File uploaded successfully",
-                 "file_name": file_name}
+                 "file_name": file_name,
+                 "project": project.project_id
+                 }
     )
 
 
