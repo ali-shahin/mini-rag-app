@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status, Request
+from fastapi import APIRouter, Depends, UploadFile, File, status, Request
 from fastapi.responses import JSONResponse
 from core.config import get_settings, Settings
 from api import DataController, DocumentController
 import aiofiles
 import logging
+import os
 from schemas.data import DataDocumentRequest
-from repositories import ProjectRepo, DataChunkRepo
-from models.dataChunk import DataChunk
+from repositories import ProjectRepo, DataChunkRepo, AssetRepo
+from models import DataChunk, Asset
 
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ async def upload_data(request: Request, project_id: str, file: UploadFile = File
                       app_settings: Settings = Depends(get_settings)):
 
     project_repo = await ProjectRepo.create_instance(request.app.db_client)
+    asset_repo = await AssetRepo.create_instance(request.app.db_client)
     data_controller = DataController()
 
     # Get the project
@@ -58,11 +60,20 @@ async def upload_data(request: Request, project_id: str, file: UploadFile = File
             content={"message": f"Failed to save file."}
         )
 
+    # Save the file to the database
+    asset = Asset(
+        asset_project_id=project.id,
+        asset_type="file",
+        asset_name=file_name,
+        asset_size=os.path.getsize(file_path)
+    )
+    _asset = await asset_repo.create_asset(asset)
+
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={"message": "File uploaded successfully",
-                 "file_name": file_name,
-                 "project": project.project_id
+                 "file_id": str(_asset.id),
+                 "project_id": project.project_id
                  }
     )
 
