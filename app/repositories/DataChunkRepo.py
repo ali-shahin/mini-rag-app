@@ -8,6 +8,15 @@ class DataChunkRepo(BaseRepo):
         super().__init__(db_client)
         self.set_collection("chunks")
 
+    @classmethod
+    async def create_instance(cls, db_client: object):
+        instance = cls(db_client)
+        await instance.init_collection()
+        return instance
+
+    async def init_collection(self):
+        await self.collection.create_index("chunk_project_id", unique=False)
+
     async def create_chunk(self, datachunk: DataChunk):
         chunk_dict = datachunk.model_dump(by_alias=True, exclude_none=True)
         result = await self.collection.insert_one(chunk_dict)

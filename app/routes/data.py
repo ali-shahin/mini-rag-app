@@ -20,7 +20,7 @@ data_router = APIRouter(
 async def upload_data(request: Request, project_id: str, file: UploadFile = File(...),
                       app_settings: Settings = Depends(get_settings)):
 
-    project_repo = ProjectRepo(request.app.db_client)
+    project_repo = await ProjectRepo.create_instance(request.app.db_client)
     data_controller = DataController()
 
     # Get the project
@@ -70,8 +70,8 @@ async def upload_data(request: Request, project_id: str, file: UploadFile = File
 @data_router.post("/process/{project_id}")
 async def process_data(request: Request, project_id: str, document_request: DataDocumentRequest):
 
-    project_repo = ProjectRepo(request.app.db_client)
-    data_chunk_repo = DataChunkRepo(request.app.db_client)
+    project_repo = await ProjectRepo.create_instance(request.app.db_client)
+    data_chunk_repo = await DataChunkRepo.create_instance(request.app.db_client)
     document_controller = DocumentController(project_id)
 
     file_name = document_request.file_name

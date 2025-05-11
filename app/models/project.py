@@ -19,3 +19,9 @@ class Project(BaseModel):
         json_encoders = {
             ObjectId: str
         }
+
+    class Settings:
+        collection_name = "projects"
+        indexes = [
+            {"key": {"project_id": 1}, "unique": True}
+        ]

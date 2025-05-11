@@ -7,6 +7,15 @@ class ProjectRepo(BaseRepo):
         super().__init__(db_client)
         self.set_collection("projects")
 
+    @classmethod
+    async def create_instance(cls, db_client: object):
+        instance = cls(db_client)
+        await instance.init_collection()
+        return instance
+
+    async def init_collection(self):
+        await self.collection.create_index("project_id", unique=True)
+
     async def create_project(self, project: Project):
         project_dict = project.model_dump(by_alias=True, exclude_none=True)
         result = await self.collection.insert_one(project_dict)

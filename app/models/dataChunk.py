@@ -16,3 +16,9 @@ class DataChunk(BaseModel):
         json_encoders = {
             ObjectId: str
         }
+
+    class Settings:
+        collection_name = "chunks"
+        indexes = [
+            {"key": {"chunk_project_id": 1}, "unique": False}
+        ]
