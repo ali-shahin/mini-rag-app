@@ -23,6 +23,9 @@ class DocumentController (BaseController):
         file_extension = self.get_extension(file_name)
         file_path = os.path.join(self.project_path, file_name)
 
+        if not os.path.exists(file_path):
+            return None
+
         if file_extension == '.pdf':
             return PyMuPDFLoader(file_path)
         elif file_extension == '.csv':

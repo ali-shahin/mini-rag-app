@@ -83,9 +83,9 @@ async def process_data(request: Request, project_id: str, document_request: Data
 
     project_repo = await ProjectRepo.create_instance(request.app.db_client)
     data_chunk_repo = await DataChunkRepo.create_instance(request.app.db_client)
+    asset_repo = await AssetRepo.create_instance(request.app.db_client)
     document_controller = DocumentController(project_id)
 
-    file_name = document_request.file_name
     chunk_size = document_request.chunk_size
     chunk_overlap = document_request.chunk_overlap
     do_reset = document_request.do_reset
@@ -97,54 +97,67 @@ async def process_data(request: Request, project_id: str, document_request: Data
             content={"message": f"Project {project_id} not found."}
         )
 
-    try:
-        # Load the document
-        document = document_controller.get_content(file_name)
-        if not document:
-            return JSONResponse(
-                status_code=status.HTTP_404_NOT_FOUND,
-                content={"message": f"File {file_name} not found."}
-            )
+    project_files = await asset_repo.get_project_assets(project.id, "file")
+    if not project_files:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": f"Project {project_id} has no files."}
+        )
 
-        # Process the content
-        chunks = document_controller.process_content(
-            document, chunk_size, chunk_overlap)
-        if not chunks:
+    # Delete existing chunks if required
+    if do_reset == 1:
+        await data_chunk_repo.delete_chunks(project.id)
+
+    no_of_chunks = 0
+    no_of_files = 0
+
+    for file in project_files:
+        try:
+            # Load the document
+            document = document_controller.get_content(file.asset_name)
+            if document is None:
+                logger.error(f"Failed to load file {file.asset_name}")
+                continue
+
+            # Process the content
+            chunks = document_controller.process_content(
+                document, chunk_size, chunk_overlap)
+            if not chunks:
+                return JSONResponse(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    content={"message": "Failed to process file."}
+                )
+
+            # Save the chunks to the database
+            chunk_processed = [
+                DataChunk(
+                    chunk_text=chunk.page_content,
+                    chunk_metadata=chunk.metadata,
+                    chunk_order=index + 1,
+                    chunk_project_id=project.id,
+                    chunk_asset_id=file.id
+                )
+                for index, chunk in enumerate(chunks)
+            ]
+
+            no_of_chunks += await data_chunk_repo.insert_chunks(chunk_processed)
+            no_of_files += 1
+            if not no_of_chunks:
+                return JSONResponse(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    content={"message": "Failed to save chunks."}
+                )
+
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content={"message": "File processed successfully",
+                         "inserted chunks": no_of_chunks,
+                         "processed files": no_of_files,
+                         }
+            )
+        except Exception as e:
+            logger.error(f"Error processing file {file.file_name}: {e}")
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                content={"message": "Failed to process file."}
+                content={"message": f"Error processing file {file.file_name}"}
             )
-
-        # Delete existing chunks if required
-        if do_reset == 1:
-            await data_chunk_repo.delete_chunks(project.id)
-
-        # Save the chunks to the database
-        chunk_processed = [
-            DataChunk(
-                chunk_text=chunk.page_content,
-                chunk_metadata=chunk.metadata,
-                chunk_order=index + 1,
-                chunk_project_id=project.id
-            )
-            for index, chunk in enumerate(chunks)
-        ]
-
-        no_of_chunks = await data_chunk_repo.insert_chunks(chunk_processed)
-        if not no_of_chunks:
-            return JSONResponse(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                content={"message": "Failed to save chunks."}
-            )
-
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={"message": "File processed successfully",
-                     "inserted chunks": no_of_chunks}
-        )
-    except Exception as e:
-        logger.error(f"Error processing file {file_name}: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"message": f"Error processing file {file_name}"}
-        )

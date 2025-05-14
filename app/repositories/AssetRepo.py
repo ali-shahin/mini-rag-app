@@ -33,6 +33,10 @@ class AssetRepo(BaseRepo):
 
         return Asset(**asset)
 
-    async def get_project_assets(self, project_id: ObjectId):
-        assets = self.collection.find({"asset_project_id": project_id})
-        return assets.to_list(length=None)
+    async def get_project_assets(self, project_id: ObjectId, asset_type: str = None):
+        assets = await self.collection.find({
+            "asset_project_id": project_id,
+            "asset_type": asset_type,
+        }).to_list(length=None)
+
+        return [Asset(**asset) for asset in assets]
