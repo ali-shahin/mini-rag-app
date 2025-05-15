@@ -12,3 +12,5 @@ pillow
 langchain-openai
 pymongo
 motor  # async MongoDB driver
+openai
+cohere

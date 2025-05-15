@@ -15,6 +15,19 @@ class Settings(BaseSettings):
     MONGO_DB_NAME: str
 
     OPENAI_API_KEY: str
+    OPENAI_API_BASE: str
+    COHERE_API_KEY: str
+
+    GENERATION_PROVIDER: str
+    EMBEDDING_PROVIDER: str
+
+    GENERATION_MODEL: str
+    EMBEDDING_MODEL: str
+    EMBEDDING_SIZE: int
+
+    DEFAULT_INPUT_MAX_CHARS: int
+    DEFAULT_MAX_OUTPUT_TOKENS: int
+    DEFAULT_GENERATION_TEMPERATURE: float
 
     model_config = SettingsConfigDict(
         env_file='.env',
