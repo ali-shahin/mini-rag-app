@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from routes import base, data, nlp
 from contextlib import asynccontextmanager
-from db import connect_to_mongo, close_mongo_connection
+
 from core.config import get_settings
+from db import connect_to_mongo, close_mongo_connection
 from services.llm.ProviderFactory import ProviderFactory as LLMProviderFactory
 from services.vectordb.ProviderFactory import ProviderFactory as VectorDBProviderFactory
+from routes.v1 import base, document_prepare, document_upload, knowledgebase_info, knowledgebase_sync, question_answering
 
 
 @asynccontextmanager
@@ -28,5 +29,9 @@ app = FastAPI(lifespan=lifespan)
 
 # Register routes
 app.include_router(base.base_router)
-app.include_router(data.data_router)
-app.include_router(nlp.nlp_router)
+
+app.include_router(document_upload.router)
+app.include_router(document_prepare.router)
+app.include_router(knowledgebase_info.router)
+app.include_router(knowledgebase_sync.router)
+app.include_router(question_answering.router)
