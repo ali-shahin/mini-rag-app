@@ -8,6 +8,8 @@ services:
     environment:
       - PYTHONPATH=/app
     depends_on:
+      qdrant:
+        condition: service_started
       mongodb:
         condition: service_healthy
     networks:
@@ -43,8 +45,21 @@ services:
     networks:
       - rag-app
 
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_storage:/qdrant/storage:z
+    networks:
+      - rag-app
+
 volumes:
   mongodb_data:
+    driver: local
+
+  qdrant_storage:
     driver: local
 
 networks:

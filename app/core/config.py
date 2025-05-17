@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     DEFAULT_MAX_OUTPUT_TOKENS: int
     DEFAULT_GENERATION_TEMPERATURE: float
 
+    VECTOR_DB_PROVIDER: str
+    QDRANT_DB_PATH: str
+    QDRANT_DISTANCE_METHOD: str
+
     model_config = SettingsConfigDict(
         env_file='.env',
         env_file_encoding='utf-8',

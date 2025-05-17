@@ -14,3 +14,4 @@ pymongo
 motor  # async MongoDB driver
 openai
 cohere
+qdrant-client
