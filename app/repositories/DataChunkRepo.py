@@ -53,7 +53,7 @@ class DataChunkRepo(BaseRepo):
         async for chunk in curser:
             chunks.append(DataChunk(**chunk))
 
-        return chunks, len(chunks)
+        return chunks
 
     async def delete_chunks(self, project_id: ObjectId):
         result = await self.collection.delete_many({"chunk_project_id": project_id})

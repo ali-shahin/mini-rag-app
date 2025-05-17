@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import base, data
+from routes import base, data, nlp
 from contextlib import asynccontextmanager
 from db import connect_to_mongo, close_mongo_connection
 from core.config import get_settings
@@ -29,3 +29,4 @@ app = FastAPI(lifespan=lifespan)
 # Register routes
 app.include_router(base.base_router)
 app.include_router(data.data_router)
+app.include_router(nlp.nlp_router)

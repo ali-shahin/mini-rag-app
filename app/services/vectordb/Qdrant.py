@@ -71,7 +71,7 @@ class Qdrant(IProvider):
             return self.client.upsert(
                 collection_name=collection_name,
                 points=[
-                    models.Point(
+                    models.PointStruct(
                         id=record_id,
                         vector=vector,
                         payload={
@@ -108,7 +108,7 @@ class Qdrant(IProvider):
                 self.client.upsert(
                     collection_name=collection_name,
                     points=[
-                        models.Point(
+                        models.PointStruct(
                             id=record_id,
                             vector=vector,
                             payload={

@@ -63,7 +63,6 @@ class CoHereProvider(IProvider):
             texts=[self.handle_prompt(text)],
             model=self.embedding_model,
             input_type=input_type,
-            output_dimension=1024,
             embedding_types=["float"]
         )
 
