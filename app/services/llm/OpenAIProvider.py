@@ -28,7 +28,7 @@ class OpenAIProvider(IProvider):
         self.embedding_model = model
         self.embedding_size = embedding_size
 
-    def generate_text(self, prompt: str, chat_history: list, max_tokens: int, temperature: float = 0) -> str:
+    def generate_text(self, prompt: str, chat_history: list, max_tokens: int = None, temperature: float = 0) -> str:
         if not self.client:
             self.logger.error('OpenAI client is not initialized')
             return None

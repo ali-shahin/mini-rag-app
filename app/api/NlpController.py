@@ -2,6 +2,7 @@ from .BaseController import BaseController
 from models import DataChunk
 from services.vectordb.IProvider import IProvider as vector_db
 from services.llm.IProvider import IProvider as llm
+from services.llm.Templates import rag
 import json
 
 class NlpController (BaseController):
@@ -44,14 +45,28 @@ class NlpController (BaseController):
         if not vector or len(vector) == 0:
             return        
 
-        result = self.vector_db.search_by_vector(collection_name=collection_name, vector=vector, limit=limit)
-        if not result or len(result) == 0:
-            return
+        return self.vector_db.search_by_vector(collection_name=collection_name, vector=vector, limit=limit)
 
-        # convert dictionary to json
-        return json.loads(json.dumps(result, default=lambda o: o.__dict__))
-    
-    
+    async def answer_query(self, project_id: str, query: str, limit: int = 10):
+        retrieved_documents = await self.search_vector_collection(project_id=project_id, query=query, limit=limit)
+        if not retrieved_documents or len(retrieved_documents) == 0:
+            return
+        
+        system_prompt = rag.get_system_prompt(domain=project_id)
+        document_prompt = "\n".join([
+            rag.get_document_prompt(document_name=idx + 1, content=doc.text) 
+            for idx, doc in enumerate(retrieved_documents)
+            ])
+
+        footer_prompt = rag.get_footer_prompt()
+
+        prompt = f"{document_prompt}\n{footer_prompt}"
+        chat_history = [
+            self.generator.construct_prompt(prompt=system_prompt, role="system"),
+        ]
+
+        return self.generator.generate_text(prompt=prompt, chat_history=chat_history)
+
     async def reset_vector_collection(self, project_id: str):
         collection_name=self.create_collection_name(collection_name=project_id)
         return self.vector_db.delete_collection(collection_name=collection_name)

@@ -6,7 +6,6 @@ from core.config import get_settings
 from services.llm.ProviderFactory import ProviderFactory as LLMProviderFactory
 from services.vectordb.ProviderFactory import ProviderFactory as VectorDBProviderFactory
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.db_client = await connect_to_mongo()
