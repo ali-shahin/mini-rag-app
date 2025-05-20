@@ -15,6 +15,8 @@ document_prompt = Template("\n".join([
 
 footer_prompt = Template("\n".join([
     "based on the above documents only, generate an answer to the question:",
+    "### Question: $question",
+    "\n\n",
     "## Answer:",
 ]))
 
@@ -24,5 +26,5 @@ def get_system_prompt(domain):
 def get_document_prompt(document_name, content):
     return document_prompt.substitute(document_name=document_name, content=content)
 
-def get_footer_prompt():
+def get_footer_prompt(question):
     return footer_prompt

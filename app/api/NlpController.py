@@ -58,7 +58,7 @@ class NlpController (BaseController):
             for idx, doc in enumerate(retrieved_documents)
             ])
 
-        footer_prompt = rag.get_footer_prompt()
+        footer_prompt = rag.get_footer_prompt(question=query)
 
         prompt = f"{document_prompt}\n{footer_prompt}"
         chat_history = [

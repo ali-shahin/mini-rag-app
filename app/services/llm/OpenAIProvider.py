@@ -7,7 +7,7 @@ import logging
 class OpenAIProvider(IProvider):
     def __init__(self):
         self.api_key = get_settings().OPENAI_API_KEY
-        self.api_base = get_settings().OPENAI_API_BASE
+        self.base_url = get_settings().OPENAI_BASE_URL
 
         self.default_input_max_chars = get_settings().DEFAULT_INPUT_MAX_CHARS
         self.default_max_output_tokens = get_settings().DEFAULT_MAX_OUTPUT_TOKENS
@@ -17,7 +17,7 @@ class OpenAIProvider(IProvider):
         self.embedding_model = None
         self.embedding_size = None
 
-        self.client = OpenAI(api_key=self.api_key)
+        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url or None)
 
         self.logger = logging.getLogger(__name__)
 

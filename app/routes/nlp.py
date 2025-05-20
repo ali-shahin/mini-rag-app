@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, status, Request
+from fastapi import APIRouter, status, Request
 from fastapi.responses import JSONResponse
-from pydantic.utils import model_to_dict
 from schemas.nlp import PushRequest, SearchRequest
 from repositories import ProjectRepo, DataChunkRepo
 from api import NlpController
@@ -82,7 +81,7 @@ async def search_data(request: Request, project_id: str, request_data: SearchReq
     if not results:
         return JSONResponse(status.HTTP_400_BAD_REQUEST, content={"message": "No results found."})
     
-    results = [model_to_dict(result) for result in results]
+    results = [dict(result) for result in results]
     
     return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Data retrieved.", "results": results})
 
