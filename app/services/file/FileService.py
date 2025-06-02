@@ -5,9 +5,20 @@ import re
 import time
 from typing import Tuple
 
+
 class FileService:
     def __init__(self, settings: Settings):
         self.settings = settings
+        self.base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        self.file_dir = os.path.join(self.base_dir, 'assets/files')
+
+    def get_base_dir(self) -> str:
+        """Get the application's base directory."""
+        return self.base_dir
+
+    def get_file_dir(self) -> str:
+        """Get the directory for storing uploaded files."""
+        return self.file_dir
 
     def validate_file(self, file: UploadFile) -> Tuple[bool, str]:
         allowed_types = self.settings.FILE_ALLOWED_TYPES
@@ -30,8 +41,9 @@ class FileService:
         timestamp = int(round(time.time() * 1000))
         return f"{timestamp}_{filename}"
 
-    def get_project_path(self, base_path: str, project_id: str) -> str:
-        project_path = os.path.join(base_path, project_id)
+    def get_project_path(self, project_id: str) -> str:
+        """Get the path for a project's files directory."""
+        project_path = os.path.join(self.file_dir, project_id)
         if not os.path.exists(project_path):
             os.makedirs(project_path)
         return project_path
