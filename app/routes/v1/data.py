@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File, status, Request
 from fastapi.responses import JSONResponse
 from core.config import get_settings, Settings
-from api import DataController, DocumentController
+from controller import DataController, DocumentController
 import aiofiles
 import logging
 import os
