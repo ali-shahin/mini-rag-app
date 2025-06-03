@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import base, data, nlp
+from routes.v1 import base, data, nlp
 from contextlib import asynccontextmanager
 from db import connect_to_mongo, close_mongo_connection
 from core.config import get_settings
