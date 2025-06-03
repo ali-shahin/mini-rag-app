@@ -1,6 +1,7 @@
 from .BaseController import BaseController
-from .ProjectController import ProjectController
 from services.document.DocumentService import DocumentService
+from services.file.FileService import FileService
+
 import os
 import logging
 
@@ -10,14 +11,15 @@ class DocumentController(BaseController):
         super().__init__()
         self.logger = logging.getLogger(__name__)
         self.project_id = project_id
-        self.project_path = ProjectController().get_project_path(project_id)
+        self.file_service = FileService(settings=self.app_settings)
         self.document_service = DocumentService()
 
     def get_extension(self, file_name: str):
         return os.path.splitext(file_name)[-1]
 
     def get_content(self, file_name: str):
-        file_path = os.path.join(self.project_path, file_name)
+        project_path = self.file_service.get_project_path(self.project_id)
+        file_path = os.path.join(project_path, file_name)
         return self.document_service.get_content(file_path)
 
     def process_content(self, document: str, chunk_size: int = 100, chunk_overlap: int = 20):

@@ -10,14 +10,12 @@ This package contains all controllers for managing business logic:
 
 from .BaseController import BaseController
 from .DataController import DataController
-from .ProjectController import ProjectController
 from .DocumentController import DocumentController
 from .NlpController import NlpController
 
 __all__ = [
     'BaseController',
     'DataController',
-    'ProjectController',
     'DocumentController',
     'NlpController'
 ]

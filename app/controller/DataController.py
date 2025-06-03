@@ -1,11 +1,12 @@
 from .BaseController import BaseController
-from .ProjectController import ProjectController
+from services.file.FileService import FileService
 from fastapi import UploadFile
 
 
 class DataController(BaseController):
     def __init__(self):
         super().__init__()
+        self.file_service = FileService(settings=self.app_settings)
         
     def validate_file(self, file: UploadFile):
         return self.file_service.validate_file(file)
