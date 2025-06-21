@@ -8,6 +8,8 @@ services:
     environment:
       - PYTHONPATH=/app
     depends_on:
+      ollama:
+        condition: service_started
       qdrant:
         condition: service_started
       mongodb:
@@ -55,11 +57,24 @@ services:
     networks:
       - rag-app
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_storage:/root/.ollama
+    networks:
+      - rag-app
+
 volumes:
   mongodb_data:
     driver: local
 
   qdrant_storage:
+    driver: local
+
+  ollama_storage:
     driver: local
 
 networks:

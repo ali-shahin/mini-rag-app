@@ -7,7 +7,7 @@ import logging
 class OpenAIProvider(IProvider):
     def __init__(self):
         self.api_key = get_settings().OPENAI_API_KEY
-        self.api_base = get_settings().OPENAI_API_BASE
+        self.base_url = get_settings().OPENAI_BASE_URL
 
         self.default_input_max_chars = get_settings().DEFAULT_INPUT_MAX_CHARS
         self.default_max_output_tokens = get_settings().DEFAULT_MAX_OUTPUT_TOKENS
@@ -17,7 +17,7 @@ class OpenAIProvider(IProvider):
         self.embedding_model = None
         self.embedding_size = None
 
-        self.client = OpenAI(api_key=self.api_key)
+        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url or None)
 
         self.logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class OpenAIProvider(IProvider):
         self.embedding_model = model
         self.embedding_size = embedding_size
 
-    def generate_text(self, prompt: str, chat_history: list, max_tokens: int, temperature: float = 0) -> str:
+    def generate_text(self, prompt: str, chat_history: list, max_tokens: int = None, temperature: float = 0) -> str:
         if not self.client:
             self.logger.error('OpenAI client is not initialized')
             return None

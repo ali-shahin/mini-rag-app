@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     MONGO_DB_NAME: str
 
     OPENAI_API_KEY: str
-    OPENAI_API_BASE: str
+    OPENAI_BASE_URL: str
     COHERE_API_KEY: str
 
     GENERATION_PROVIDER: str

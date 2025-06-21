@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from schemas.data import RetrievedDocument
 
 class IProvider(ABC):
 
@@ -40,5 +40,5 @@ class IProvider(ABC):
         pass
 
     @abstractmethod
-    def search_by_vector(self, collection_name: str, vector: list, limit: int) -> list:
+    def search_by_vector(self, collection_name: str, vector: list, limit: int) -> list[RetrievedDocument]:
         pass

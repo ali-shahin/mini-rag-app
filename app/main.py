@@ -7,7 +7,6 @@ from services.llm.ProviderFactory import ProviderFactory as LLMProviderFactory
 from services.vectordb.ProviderFactory import ProviderFactory as VectorDBProviderFactory
 from routes.v1 import base, document_prepare, document_upload, knowledgebase_info, knowledgebase_sync, question_answering
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.db_client = await connect_to_mongo()

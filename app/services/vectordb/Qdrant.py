@@ -2,6 +2,7 @@ from .IProvider import IProvider
 from core.config import get_settings
 from qdrant_client import QdrantClient, models
 import logging
+from schemas.data import RetrievedDocument
 
 class Qdrant(IProvider):
     def __init__(self):
@@ -135,11 +136,16 @@ class Qdrant(IProvider):
             return
 
         try:
-            return self.client.search(
+            result = self.client.search(
                 collection_name=collection_name,
                 query_vector=vector,
                 limit=limit
             )
+
+            if not result or len(result) == 0:
+                return []
+
+            return [RetrievedDocument(**{'score': item.score, 'text': item.payload['text']}) for item in result]
         except Exception as e:
             self.logger.error(f"Error during search: {e}")
             return
