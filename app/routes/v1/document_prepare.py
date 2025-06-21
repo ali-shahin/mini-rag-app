@@ -2,7 +2,7 @@ from fastapi import APIRouter,Request, status
 from fastapi.responses import JSONResponse
 import logging
 
-from controller import DocumentController
+from controllers import DocumentController
 from repositories import ProjectRepo, AssetRepo, DataChunkRepo
 from schemas.data import DataDocumentRequest
 from models import DataChunk

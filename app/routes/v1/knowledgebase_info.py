@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 import logging
 
 from repositories import ProjectRepo
-from controller import NlpController
+from controllers import NlpController
 
 logger = logging.getLogger(__name__)
 

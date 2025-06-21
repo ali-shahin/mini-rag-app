@@ -4,7 +4,7 @@ import logging
 
 from schemas.nlp import PushRequest
 from repositories import ProjectRepo, DataChunkRepo
-from controller import NlpController
+from controllers import NlpController
 
 logger = logging.getLogger(__name__)
 

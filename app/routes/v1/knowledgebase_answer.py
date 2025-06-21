@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Request
 from fastapi.responses import JSONResponse
 from schemas.nlp import SearchRequest
 from repositories import ProjectRepo
-from controller import NlpController
+from controllers import NlpController
 import logging
 
 logger = logging.getLogger(__name__)

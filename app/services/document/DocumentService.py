@@ -2,8 +2,6 @@ from langchain_community.document_loaders import TextLoader, PyMuPDFLoader, CSVL
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
 import logging
-from typing import List, Optional
-from models.dataChunk import DataChunk
 
 class DocumentService:
     def __init__(self):
