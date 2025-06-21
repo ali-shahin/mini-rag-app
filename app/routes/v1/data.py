@@ -145,19 +145,20 @@ async def process_data(request: Request, project_id: str, document_request: Data
             if not no_of_chunks:
                 return JSONResponse(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    content={"message": "Failed to save chunks."}
+                    content={"message": "Failed to save chunks of file: " + file.asset_name}
                 )
-
-            return JSONResponse(
-                status_code=status.HTTP_200_OK,
-                content={"message": "File processed successfully",
-                         "inserted chunks": no_of_chunks,
-                         "processed files": no_of_files,
-                         }
-            )
+            
         except Exception as e:
             logger.error(f"Error processing file {file.file_name}: {e}")
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 content={"message": f"Error processing file {file.file_name}"}
             )
+    
+    return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={"message": "File processed successfully",
+                        "inserted chunks": no_of_chunks,
+                        "processed files": no_of_files,
+                        }
+        )
