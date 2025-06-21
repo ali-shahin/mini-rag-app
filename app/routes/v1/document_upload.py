@@ -4,7 +4,7 @@ import aiofiles
 import logging
 import os
 from core.config import get_settings, Settings
-from api import DataController
+from controller import DataController
 from repositories import ProjectRepo, AssetRepo
 from models import Asset
 

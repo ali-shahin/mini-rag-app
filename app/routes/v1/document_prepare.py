@@ -2,7 +2,7 @@ from fastapi import APIRouter,Request, status
 from fastapi.responses import JSONResponse
 import logging
 
-from api import DocumentController
+from controller import DocumentController
 from repositories import ProjectRepo, AssetRepo, DataChunkRepo
 from schemas.data import DataDocumentRequest
 from models import DataChunk
@@ -82,19 +82,20 @@ async def prepare_documents(request: Request, project_id: str, document_request:
             if not no_of_chunks:
                 return JSONResponse(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    content={"message": "Failed to save chunks."}
+                    content={"message": "Failed to save chunks of document: " + document.asset_name}
                 )
 
-            return JSONResponse(
-                status_code=status.HTTP_200_OK,
-                content={"message": "Document processed successfully",
-                         "inserted chunks": no_of_chunks,
-                         "processed documents": no_of_documents,
-                         }
-            )
         except Exception as e:
-            logger.error(f"Error processing document {document.file_name}: {e}")
+            logger.error(f"Error processing document {document.asset_name}: {e}")
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                content={"message": f"Error processing document {document.file_name}"}
+                content={"message": f"Error processing document {document.asset_name}: {e}"}
             )
+        
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"message": "Document processed successfully",
+                    "inserted chunks": no_of_chunks,
+                    "processed documents": no_of_documents,
+                    }
+    )

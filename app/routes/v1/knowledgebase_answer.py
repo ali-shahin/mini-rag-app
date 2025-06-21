@@ -1,18 +1,20 @@
 from fastapi import APIRouter, status, Request
 from fastapi.responses import JSONResponse
-import logging
-
+from schemas.nlp import SearchRequest
 from repositories import ProjectRepo
 from controller import NlpController
+import logging
 
 logger = logging.getLogger(__name__)
-
+    
 router = APIRouter(
     prefix="/api/v1/knowledgebase",
-    tags=["Knowledge Base"])
+    tags=["knowledgebase"]
+)
 
-@router.get("/info/{project_id}")
-async def get_knowledgebase_info(request: Request, project_id: str):
+# /api/v1/knowledgebase/answer/{project_id}
+@router.post("/answer/{project_id}")
+async def answer_knowledgebase(request: Request, project_id: str, request_data: SearchRequest):
     project_repo = await ProjectRepo.create_instance(request.app.db_client)
     nlp_controller = NlpController(request.app.vector_db_client, request.app.generation_client, request.app.embedding_client)
 
@@ -23,6 +25,8 @@ async def get_knowledgebase_info(request: Request, project_id: str):
             content={"message": f"Project {project_id} not found."}
         )
     
-    collection_info = await nlp_controller.get_vector_collection(project.project_id)
-
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Data retrieved.", "collection_info": collection_info})
+    answer = await nlp_controller.answer_query(project.project_id, request_data.query, request_data.limit)
+    if not answer:
+        return JSONResponse(status.HTTP_400_BAD_REQUEST, content={"message": "No results found."})
+        
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Data retrieved.", "answer": answer})
