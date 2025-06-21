@@ -1,20 +1,25 @@
-# .gitignore file for a python project
+# Environment and IDE
 .env
-.vscode
+.venv
+.env.*
+!.env.example
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-# C extensions
+*$py.class
 *.so
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
+dist/
+downloads/
 eggs/
-.eggs-info/
+.eggs/
 lib/
 lib64/
 parts/
@@ -22,12 +27,26 @@ sdist/
 var/
 wheels/
 share/python-wheels/
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-# Unit test / coverage reports
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+.tox/
 .coverage
 .coverage.*
+.cache
 nosetests.xml
 coverage.xml
 *.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Project specific
+app/assets/files/*
+!app/assets/files/.gitkeep
+data/
+mongo-express/
+qdrant/storage/

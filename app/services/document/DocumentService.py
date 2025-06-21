@@ -1,27 +1,16 @@
-from .BaseController import BaseController
-from .ProjectController import ProjectController
+from langchain_community.document_loaders import TextLoader, PyMuPDFLoader, CSVLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
 import logging
-from langchain_community.document_loaders import TextLoader
-from langchain_community.document_loaders import PyMuPDFLoader
-from langchain_community.document_loaders import CSVLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from typing import List, Optional
+from models.dataChunk import DataChunk
 
-
-class DocumentController (BaseController):
-    def __init__(self, project_id: str):
-        super().__init__()
+class DocumentService:
+    def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-        self.project_id = project_id
-        self.project_path = ProjectController().get_project_path(project_id)
-
-    def get_extension(self, file_name: str):
-        return os.path.splitext(file_name)[-1]
-
-    def get_loader(self, file_name: str):
-        file_extension = self.get_extension(file_name)
-        file_path = os.path.join(self.project_path, file_name)
+    def get_loader(self, file_path: str):
+        file_extension = os.path.splitext(file_path)[-1]
 
         if not os.path.exists(file_path):
             return None
@@ -35,17 +24,17 @@ class DocumentController (BaseController):
         else:
             return None
 
-    def get_content(self, file_name: str):
-        file_loader = self.get_loader(file_name)
+    def get_content(self, file_path: str):
+        file_loader = self.get_loader(file_path)
         if file_loader is None:
-            raise ValueError(f"Unsupported file type: {file_name}")
+            raise ValueError(f"Unsupported file type: {file_path}")
 
         try:
             document = file_loader.load()
             return document
         except Exception as e:
-            self.logger.error(f"Error loading file {file_name}: {e}")
-            raise RuntimeError(f"Error loading file {file_name}")
+            self.logger.error(f"Error loading file {file_path}: {e}")
+            raise RuntimeError(f"Error loading file {file_path}")
 
     def process_content(self, document: str, chunk_size: int = 100, chunk_overlap: int = 20):
         try:

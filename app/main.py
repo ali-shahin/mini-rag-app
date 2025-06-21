@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from routes.v1 import base, data, nlp
 from contextlib import asynccontextmanager
 
 from core.config import get_settings
@@ -6,6 +7,7 @@ from db import connect_to_mongo, close_mongo_connection
 from services.llm.ProviderFactory import ProviderFactory as LLMProviderFactory
 from services.vectordb.ProviderFactory import ProviderFactory as VectorDBProviderFactory
 from routes.v1 import base, document_prepare, document_upload, knowledgebase_info, knowledgebase_sync, question_answering
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

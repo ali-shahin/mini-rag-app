@@ -3,7 +3,10 @@ import os
 
 
 class BaseController:
+    """Base controller class providing common functionality for all controllers."""
+    
     def __init__(self):
+        """Initialize the base controller with application settings."""
         self.app_settings: Settings = get_settings()
         self.base_dir = os.path.dirname(os.path.dirname(__file__))
         self.file_dir = os.path.join(self.base_dir, 'assets/files')
